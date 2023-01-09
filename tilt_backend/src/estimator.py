@@ -9,23 +9,29 @@ def avg_power(appliances: list[Appliance]) -> float:
     return 0
 
 
+def group_by_category(
+        appliances: list[Appliance]) -> dict[UsageCategory, list[Appliance]]:
+    groups = {}
+    for cat in UsageCategory:
+        groups[cat] = [a for a in appliances if a.category == cat]
+    return groups
+
+
 def estimate(appliances: list[Appliance],
              consumption: float) -> dict[str, float]:
-    app_f = [a for a in appliances if a.category == UsageCategory.F]
-    app_a = [a for a in appliances if a.category == UsageCategory.A]
-    app_l = [a for a in appliances if a.category == UsageCategory.L]
+    groups = group_by_category(appliances)
 
-    # get average power, because time is split equally to appliances
-    # of the same category
-    power_f = avg_power(app_f)
-    power_a = avg_power(app_a)
-    power_l = avg_power(app_l)
+    # 1. Get average power over appliances from the same group
+    power_f = avg_power(groups[UsageCategory.F])
+    power_a = avg_power(groups[UsageCategory.A])
+    power_l = avg_power(groups[UsageCategory.L])
 
-    # Compute min and max time of usage
+    # 2. Get min and max usage time
     min_f, max_f = UsageCategory.F.min(), UsageCategory.F.max()
     min_a, max_a = UsageCategory.A.min(), UsageCategory.A.max()
     min_l, max_l = UsageCategory.L.min(), UsageCategory.L.max()
 
+    # 3. Fine tune usage time based on total consumption
     if power_f:
         tmp = (consumption - (min_a * power_a + min_l * power_l)) / power_f
         if tmp < max_f:
@@ -53,12 +59,13 @@ def estimate(appliances: list[Appliance],
         if tmp > min_l:
             min_l = tmp
 
-    # Compute one average solution
+    # 4. Compute one average solution
     mean_f = (min_f + max_f) / 2
     if power_l:
         # Select the mean and only solve the third variable
         mean_a = (min_a + max_a) / 2
-        mean_l = (consumption - (mean_f * power_f + mean_a * power_a)) / power_l
+        mean_l = (consumption -
+                  (mean_f * power_f + mean_a * power_a)) / power_l
     elif power_a:
         # Solve now, as the third variable is 0 anyway
         mean_a = (consumption - (mean_f * power_f)) / power_a
@@ -68,20 +75,24 @@ def estimate(appliances: list[Appliance],
         mean_a = 0
         mean_l = 0
 
-    for a in app_f:
-        a.min_consumption = (min_f / len(app_f)) * a.power
-        a.mean_consumption = (mean_f / len(app_f)) * a.power
-        a.max_consumption = (max_f / len(app_f)) * a.power
+    # 5. Compute consumption per appliance
+    for a in groups[UsageCategory.F]:
+        n = len(groups[UsageCategory.F])
+        a.min_consumption = (min_f / n) * a.power
+        a.mean_consumption = (mean_f / n) * a.power
+        a.max_consumption = (max_f / n) * a.power
 
-    for a in app_a:
-        a.min_consumption = (min_a / len(app_a)) * a.power
-        a.mean_consumption = (mean_a / len(app_a)) * a.power
-        a.max_consumption = (max_a / len(app_a)) * a.power
+    for a in groups[UsageCategory.A]:
+        n = len(groups[UsageCategory.A])
+        a.min_consumption = (min_a / n) * a.power
+        a.mean_consumption = (mean_a / n) * a.power
+        a.max_consumption = (max_a / n) * a.power
 
-    for a in app_l:
-        a.min_consumption = (min_l / len(app_l)) * a.power
-        a.mean_consumption = (mean_l / len(app_l)) * a.power
-        a.max_consumption = (max_l / len(app_l)) * a.power
+    for a in groups[UsageCategory.L]:
+        n = len(groups[UsageCategory.L])
+        a.min_consumption = (min_l / n) * a.power
+        a.mean_consumption = (mean_l / n) * a.power
+        a.max_consumption = (max_l / n) * a.power
 
     res = {a.name: a.consumption_dict() for a in appliances}
     return res
