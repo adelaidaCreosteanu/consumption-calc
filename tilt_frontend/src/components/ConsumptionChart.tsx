@@ -18,11 +18,18 @@ interface IChartProps {
 export default function ConsumptionChart(props: IChartProps) {
   const prepareData = () => {
     let data = [];
+    let max = 0;
 
     for (let code in props.estimates) {
       let aplcData = props.estimates[code];
+
+      // Set max
+      if (aplcData.range[1] * 1000 > max) {
+        max = aplcData.range[1] * 1000
+      }
+
       // Convert from kWh to Wh
-      let rangeWh = aplcData.range.map((r) => (r * 1000).toFixed(0) );
+      let rangeWh = aplcData.range.map((r) => (r * 1000).toFixed(0));
       let meanWh = (aplcData.mean * 1000).toFixed(0);
       // Convert appliance codes to names
       let fullName = applianceCodes[code as keyof typeof applianceCodes];
@@ -34,7 +41,7 @@ export default function ConsumptionChart(props: IChartProps) {
       });
     }
 
-    return data;
+    return {data: data, max: max};
   };
 
   if (Object.keys(props.estimates).length === 0) {
@@ -44,11 +51,12 @@ export default function ConsumptionChart(props: IChartProps) {
       </Typography>
     );
   } else {
+    let data = prepareData();
     return (
       <ComposedChart
-        width={600}
+        width={900}
         height={400}
-        data={prepareData()}
+        data={data.data}
         margin={{
           top: 5,
           right: 30,
@@ -57,8 +65,8 @@ export default function ConsumptionChart(props: IChartProps) {
         }}
       >
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="name" angle={-20}/>
-        <YAxis label={{ value: 'Consumption in Wh', angle: -90, position: 'left' }}/>
+        <XAxis dataKey="name" />
+        <YAxis unit="Wh" domain={[0, data.max]} />
         <Tooltip />
         <Legend verticalAlign="bottom" />
         <Bar dataKey="range" fill="#8884d8" />
