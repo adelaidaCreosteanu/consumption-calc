@@ -25,13 +25,13 @@ const appliance_codes = {
   blt: "Big Light",
 };
 
-interface IProps {
+interface IFormProps {
   consumption: number | undefined;
   setConsumption: React.Dispatch<React.SetStateAction<number | undefined>>;
   setEstimates: React.Dispatch<React.SetStateAction<IApplianceEstimates>>;
 }
 
-function UserForm(props: IProps) {
+export default function UserForm(props: IFormProps) {
   const [appliances, setAppliances] = useState<string[]>([]);
   const [minC, setMinC] = useState<number | undefined>(undefined);
 
@@ -136,7 +136,7 @@ function UserForm(props: IProps) {
               aria-label="consumption-input"
               min={typeof minC === "number" ? minC : 0}
               max={75}
-              value={props.consumption}
+              value={props.consumption === undefined ? 0 : props.consumption}
               onChange={handleSliderChange}
               valueLabelDisplay="auto"
             />
@@ -146,5 +146,3 @@ function UserForm(props: IProps) {
     </div>
   );
 }
-
-export default UserForm;
