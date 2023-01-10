@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "./App.css";
-import ApplianceSelect from "./components/ApplianceSelect";
+import UserForm from "./components/UserForm";
 
 function App() {
   const [consumption, setConsumption] = useState<number | undefined>(undefined);
@@ -8,7 +8,7 @@ function App() {
 
   return (
     <div className="App">
-      <ApplianceSelect
+      <UserForm
         consumption={consumption}
         setConsumption={setConsumption}
         setEstimates={setEstimates}
