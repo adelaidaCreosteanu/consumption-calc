@@ -4,7 +4,7 @@ from fastapi import status
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.estimator import compute_min_consumption, estimate
-from src.types import   get_appliance
+from src.types import Appliance, get_appliance
 
 app = FastAPI()
 
@@ -20,21 +20,41 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+def _create_appliances(appliances: str) -> list[Appliance]:
+    return [get_appliance(a) for a in appliances.split(",")]
 
-@app.get("/consumptions", status_code=200)
-async def consumptions(total: float, appliances: str, response: Response):
+
+@app.get("/min_consumption", status_code=200)
+async def min_consumption(appliances: str, response: Response):
     try:
-        # Instantiate appliances
-        aplcs = [get_appliance(a) for a in appliances.split(",")]
+        aplcs = _create_appliances(appliances)
     except Exception as ex:
         response.status_code = status.HTTP_400_BAD_REQUEST
-        return {"error": str(ex)}
+        return {"detail": str(ex)}
+
+    try:
+        # Calculate min consumption of appliances
+        result = compute_min_consumption(aplcs)
+    except Exception as ex:
+        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        return {"detail": str(ex)}
+
+    return result
+
+
+@app.get("/estimate", status_code=200)
+async def estimate(total: float, appliances: str, response: Response):
+    try:
+        aplcs = _create_appliances(appliances)
+    except Exception as ex:
+        response.status_code = status.HTTP_400_BAD_REQUEST
+        return {"detail": str(ex)}
 
     try:
         # Estimate consumption per appliance
         result = estimate(aplcs, total)
     except Exception as ex:
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        return {"error": str(ex)}
+        return {"detail": str(ex)}
 
     return result
