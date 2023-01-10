@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 
-const applianceCodes = {
+export const applianceCodes = {
   fdg: "Fridge",
   wmc: "Washing machine",
   tv: "TV",

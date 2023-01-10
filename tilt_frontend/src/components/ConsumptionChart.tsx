@@ -9,17 +9,7 @@ import {
   Scatter,
   ComposedChart,
 } from "recharts";
-
-const applianceCodes = {
-  fdg: "Fridge",
-  wmc: "Washing machine",
-  tv: "TV",
-  frz: "Freezer",
-  dwr: "Dishwasher",
-  isv: "Induction stove",
-  slt: "Small Light",
-  blt: "Big Light",
-};
+import { applianceCodes } from "./UserForm";
 
 interface IChartProps {
   estimates: IApplianceEstimates;
