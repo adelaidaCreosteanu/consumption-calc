@@ -1,4 +1,3 @@
-from urllib import response
 from fastapi import FastAPI
 from fastapi import Response
 from fastapi import status
@@ -8,7 +7,6 @@ app = FastAPI()
 
 origins = [
     "http://localhost:3000",
-    "https://main.d1v91ui4o6nkl1.amplifyapp.com"
 ]
 
 app.add_middleware(
@@ -21,5 +19,5 @@ app.add_middleware(
 
 
 @app.get("/consumptions", status_code=200)
-async def consumptions(total: float, appliances: str, response: response):
-    pass
+async def consumptions(total: float, appliances: str, response: Response):
+    return {"success"}
