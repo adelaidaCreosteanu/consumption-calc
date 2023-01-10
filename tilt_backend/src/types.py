@@ -33,3 +33,17 @@ class Appliance:
             "mean": self.mean_consumption,
             "max": self.max_consumption
         }
+
+
+def get_appliance(code: str) -> Appliance:
+    appliances = {
+        "fdg": Appliance("fdg", UsageCategory.F, power=2),
+        "wmc": Appliance("wmc", UsageCategory.A, power=1.5),
+        "tv": Appliance("tv", UsageCategory.L, power=0.5),
+        "frz": Appliance("frz", UsageCategory.F, power=2.5),
+        "dwr": Appliance("dwr", UsageCategory.A, power=2.5),
+        "isv": Appliance("isv", UsageCategory.A, power=3),
+        "slt": Appliance("slt", UsageCategory.L, power=0.1),
+        "blt": Appliance("blt", UsageCategory.L, power=0.8),
+    }
+    return appliances[code]

@@ -111,5 +111,5 @@ def estimate(appliances: list[Appliance],
         a.mean_consumption = (mean_l / n) * a.power
         a.max_consumption = (max_l / n) * a.power
 
-    res = {a.name: a.consumption_dict() for a in appliances}
-    return res
+    result = {a.name: a.consumption_dict() for a in appliances}
+    return result
