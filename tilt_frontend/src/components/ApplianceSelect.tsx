@@ -2,7 +2,6 @@ import {
   Box,
   Chip,
   FormControl,
-  InputAdornment,
   InputLabel,
   MenuItem,
   OutlinedInput,
@@ -10,7 +9,7 @@ import {
   SelectChangeEvent,
   Slider,
 } from "@mui/material";
-import { ChangeEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 const appliance_codes = {
   fdg: "Fridge",
@@ -23,26 +22,32 @@ const appliance_codes = {
   blt: "Big Light",
 };
 
-interface IProps {}
+interface IProps {
+  consumption: number | undefined;
+  setConsumption: React.Dispatch<React.SetStateAction<number | undefined>>;
+  setEstimates: React.Dispatch<React.SetStateAction<IApplianceEstimates>>;
+}
 
 function ApplianceSelect(props: IProps) {
   const [appliances, setAppliances] = useState<string[]>([]);
-  const [consumption, setConsumption] = useState<number | undefined>(undefined);
   const [minC, setMinC] = useState<number | undefined>(undefined);
 
   useEffect(() => {
     if (appliances.length > 0) {
       sendMinRequest();
+    } else {
+      // If appliances list is emptied, set min consumption to 0
+      setMinC(0);
     }
   }, [appliances]);
 
   useEffect(() => {
-    if (appliances.length > 0 && consumption) {
+    if (appliances.length > 0 && props.consumption) {
       sendComputeRequest();
     } else {
-      // TODO: Reset graph if appliances are emptied
+      props.setEstimates({})
     }
-  }, [appliances, consumption]);
+  }, [appliances, props.consumption]);
 
   const sendMinRequest = () => {
     fetch(
@@ -50,14 +55,16 @@ function ApplianceSelect(props: IProps) {
     )
       .then((response) => response.json())
       .then((min_consumption: number) => setMinC(min_consumption));
-  }
+  };
 
   const sendComputeRequest = () => {
     fetch(
-      `http://localhost:8000/estimate_appliances?total=${consumption}&appliances=${appliances.join()}`
+      `http://localhost:8000/estimate_appliances?total=${props.consumption}&appliances=${appliances.join()}`
     )
       .then((response) => response.json())
-      .then(); // TODO
+      .then((estimates: IApplianceEstimates) =>
+        props.setEstimates(estimates)
+      );
   };
 
   const handleAppliancesChange = (
@@ -73,7 +80,7 @@ function ApplianceSelect(props: IProps) {
   };
 
   const handleSliderChange = (event: Event, newValue: number | number[]) => {
-    setConsumption(Number(newValue));
+    props.setConsumption(Number(newValue));
   };
 
   return (
@@ -111,6 +118,7 @@ function ApplianceSelect(props: IProps) {
             aria-label="consumption-input"
             min={typeof minC === "number" ? minC : 0}
             max={75}
+            value={props.consumption}
             onChange={handleSliderChange}
             valueLabelDisplay="auto"
           />

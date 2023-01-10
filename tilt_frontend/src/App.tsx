@@ -1,13 +1,18 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
-import ApplianceSelect from './components/ApplianceSelect';
+import { useState } from "react";
+import "./App.css";
+import ApplianceSelect from "./components/ApplianceSelect";
 
 function App() {
+  const [consumption, setConsumption] = useState<number | undefined>(undefined);
+  const [estimates, setEstimates] = useState<IApplianceEstimates>({});
+
   return (
     <div className="App">
-      <ApplianceSelect/>
-      <div>Your appliances: ...</div>
+      <ApplianceSelect
+        consumption={consumption}
+        setConsumption={setConsumption}
+        setEstimates={setEstimates}
+      />
     </div>
   );
 }
