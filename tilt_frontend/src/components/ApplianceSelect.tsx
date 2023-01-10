@@ -31,11 +31,26 @@ function ApplianceSelect(props: IProps) {
   const [minC, setMinC] = useState<number | undefined>(undefined);
 
   useEffect(() => {
+    if (appliances.length > 0) {
+      sendMinRequest();
+    }
+  }, [appliances]);
+
+  useEffect(() => {
     if (appliances.length > 0 && consumption) {
       sendComputeRequest();
     } else {
+      // TODO: Reset graph if appliances are emptied
     }
   }, [appliances, consumption]);
+
+  const sendMinRequest = () => {
+    fetch(
+      `http://localhost:8000/min_consumption?appliances=${appliances.join()}`
+    )
+      .then((response) => response.json())
+      .then((min_consumption: number) => setMinC(min_consumption));
+  }
 
   const sendComputeRequest = () => {
     fetch(
@@ -55,11 +70,6 @@ function ApplianceSelect(props: IProps) {
       // On autofill we get a stringified value.
       typeof value === "string" ? value.split(",") : value
     );
-    fetch(
-      `http://localhost:8000/min_consumption?appliances=${appliances.join()}`
-    )
-      .then((response) => response.json())
-      .then((min_consumption: number) => setMinC(min_consumption));
   };
 
   const handleSliderChange = (event: Event, newValue: number | number[]) => {
