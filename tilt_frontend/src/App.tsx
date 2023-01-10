@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./App.css";
+import ConsumptionChart from "./components/ConsumptionChart";
 import UserForm from "./components/UserForm";
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
         setConsumption={setConsumption}
         setEstimates={setEstimates}
       />
+      <ConsumptionChart estimates={estimates}/>
     </div>
   );
 }
