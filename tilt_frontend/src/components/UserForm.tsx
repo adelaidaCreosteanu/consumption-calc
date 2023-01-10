@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 
-const appliance_codes = {
+const applianceCodes = {
   fdg: "Fridge",
   wmc: "Washing machine",
   tv: "TV",
@@ -113,14 +113,14 @@ export default function UserForm(props: IFormProps) {
                     <Chip
                       key={value}
                       label={
-                        appliance_codes[value as keyof typeof appliance_codes]
+                        applianceCodes[value as keyof typeof applianceCodes]
                       }
                     />
                   ))}
                 </Box>
               )}
             >
-              {Object.entries(appliance_codes).map(([code, name]) => (
+              {Object.entries(applianceCodes).map(([code, name]) => (
                 <MenuItem key={code} value={code}>
                   {name}
                 </MenuItem>

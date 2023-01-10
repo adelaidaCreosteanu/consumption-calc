@@ -1,4 +1,4 @@
 interface IApplianceEstimates {
   // Each appliance has a dictionary containing numeric attributes.
-  [aplc: string]: { min: number; mean: number; max: number };
+  [aplc: string]: { range: number[]; mean: number; };
 }

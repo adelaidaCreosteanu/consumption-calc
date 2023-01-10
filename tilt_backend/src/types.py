@@ -29,9 +29,8 @@ class Appliance:
 
     def consumption_dict(self) -> dict[str, float]:
         return {
-            "min": self.min_consumption,
+            "range": [self.min_consumption, self.max_consumption],
             "mean": self.mean_consumption,
-            "max": self.max_consumption
         }
 
 
