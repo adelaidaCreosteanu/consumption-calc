@@ -42,8 +42,8 @@ async def min_consumption(appliances: str, response: Response):
     return result
 
 
-@app.get("/estimate", status_code=200)
-async def estimate(total: float, appliances: str, response: Response):
+@app.get("/estimate_appliances", status_code=200)
+async def estimate_appliances(total: float, appliances: str, response: Response):
     try:
         aplcs = _create_appliances(appliances)
     except Exception as ex:
