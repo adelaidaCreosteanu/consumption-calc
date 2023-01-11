@@ -87,62 +87,62 @@ export default function UserForm(props: IFormProps) {
   };
 
   return (
-    <div>
-      <div>
-        <Stack spacing={2} sx={{ m: 10 }}>
-          <TextField
-            id="email"
-            label="Email"
-            variant="outlined"
+    <Stack
+      direction="row"
+      justifyContent="center"
+      alignItems="center"
+    >
+      <Stack spacing={4} sx={{ m: 10 }}>
+        <TextField
+          id="email"
+          label="Email"
+          variant="outlined"
+          sx={{ width: 300 }}
+        />
+
+        <FormControl sx={{ width: 300 }}>
+          <InputLabel id="appliance-selection-label">Appliances:</InputLabel>
+          <Select
+            labelId="appliance-selection-label"
+            id="appliance-selection"
+            multiple
+            value={appliances}
             sx={{ width: 300 }}
+            onChange={handleAppliancesChange}
+            input={<OutlinedInput id="select-appliance" label="Appliance" />}
+            renderValue={(selected) => (
+              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                {selected.map((value) => (
+                  <Chip
+                    key={value}
+                    label={applianceCodes[value as keyof typeof applianceCodes]}
+                  />
+                ))}
+              </Box>
+            )}
+          >
+            {Object.entries(applianceCodes).map(([code, name]) => (
+              <MenuItem key={code} value={code}>
+                {name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        <FormControl sx={{ width: 300 }}>
+          <Typography id="input-slider" gutterBottom>
+            Daily consumption in kWh:
+          </Typography>
+          <Slider
+            aria-label="consumption-input"
+            min={typeof minC === "number" ? minC : 0}
+            max={75}
+            value={props.consumption === undefined ? 0 : props.consumption}
+            onChange={handleSliderChange}
+            valueLabelDisplay="auto"
           />
-
-          <FormControl sx={{ width: 300 }}>
-            <InputLabel id="appliance-selection-label">Appliances:</InputLabel>
-            <Select
-              labelId="appliance-selection-label"
-              id="appliance-selection"
-              multiple
-              value={appliances}
-              sx={{ width: 300 }}
-              onChange={handleAppliancesChange}
-              input={<OutlinedInput id="select-appliance" label="Appliance" />}
-              renderValue={(selected) => (
-                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                  {selected.map((value) => (
-                    <Chip
-                      key={value}
-                      label={
-                        applianceCodes[value as keyof typeof applianceCodes]
-                      }
-                    />
-                  ))}
-                </Box>
-              )}
-            >
-              {Object.entries(applianceCodes).map(([code, name]) => (
-                <MenuItem key={code} value={code}>
-                  {name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-
-          <FormControl sx={{ width: 300 }}>
-            <Typography id="input-slider" gutterBottom>
-              Daily consumption in kWh:
-            </Typography>
-            <Slider
-              aria-label="consumption-input"
-              min={typeof minC === "number" ? minC : 0}
-              max={75}
-              value={props.consumption === undefined ? 0 : props.consumption}
-              onChange={handleSliderChange}
-              valueLabelDisplay="auto"
-            />
-          </FormControl>
-        </Stack>
-      </div>
-    </div>
+        </FormControl>
+      </Stack>
+    </Stack>
   );
 }
