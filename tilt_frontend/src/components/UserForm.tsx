@@ -47,12 +47,20 @@ export default function UserForm(props: IFormProps) {
   }, [appliances]);
 
   useEffect(() => {
+    if (props.consumption && props.consumption < minC) {
+      props.setConsumption(minC);
+    } else if (props.consumption && props.consumption > maxC) {
+      props.setConsumption(maxC);
+    }
+  }, [minC, maxC])
+
+  useEffect(() => {
     if (appliances.length > 0 && props.consumption) {
       sendComputeRequest();
     } else {
       props.setEstimates({});
     }
-  }, [appliances, props.consumption]);
+  }, [props.consumption]);
 
   const sendMinMaxRequest = () => {
     fetch(
