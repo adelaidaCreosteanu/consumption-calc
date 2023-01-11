@@ -33,14 +33,16 @@ interface IFormProps {
 
 export default function UserForm(props: IFormProps) {
   const [appliances, setAppliances] = useState<string[]>([]);
-  const [minC, setMinC] = useState<number | undefined>(undefined);
+  const [minC, setMinC] = useState<number>(0);
+  const [maxC, setMaxC] = useState<number>(75);
 
   useEffect(() => {
     if (appliances.length > 0) {
-      sendMinRequest();
+      sendMinMaxRequest();
     } else {
-      // If appliances list is emptied, set min consumption to 0
+      // If appliances list is emptied, reset min and max
       setMinC(0);
+      setMaxC(75);
     }
   }, [appliances]);
 
@@ -52,12 +54,15 @@ export default function UserForm(props: IFormProps) {
     }
   }, [appliances, props.consumption]);
 
-  const sendMinRequest = () => {
+  const sendMinMaxRequest = () => {
     fetch(
-      `http://localhost:8000/min_consumption?appliances=${appliances.join()}`
+      `http://localhost:8000/min_max_consumption?appliances=${appliances.join()}`
     )
       .then((response) => response.json())
-      .then((min_consumption: number) => setMinC(min_consumption));
+      .then((range: IConsumptionRange) => {
+        setMinC(Math.ceil(range.min * 100) / 100);
+        setMaxC(Math.floor(range.max * 100) / 100);
+      });
   };
 
   const sendComputeRequest = () => {
@@ -87,11 +92,7 @@ export default function UserForm(props: IFormProps) {
   };
 
   return (
-    <Stack
-      direction="row"
-      justifyContent="center"
-      alignItems="center"
-    >
+    <Stack direction="row" justifyContent="center" alignItems="center">
       <Stack spacing={4} sx={{ m: 10 }}>
         <TextField
           id="email"
@@ -135,9 +136,9 @@ export default function UserForm(props: IFormProps) {
           </Typography>
           <Slider
             aria-label="consumption-input"
-            min={typeof minC === "number" ? minC : 0}
-            max={75}
-            value={props.consumption === undefined ? 0 : props.consumption}
+            min={minC}
+            max={maxC}
+            value={props.consumption ? props.consumption : 0}
             onChange={handleSliderChange}
             valueLabelDisplay="auto"
           />

@@ -17,7 +17,7 @@ def group_by_category(
     return groups
 
 
-def compute_min_consumption(appliances: list[Appliance]) -> float:
+def compute_min_max_consumption(appliances: list[Appliance]) -> dict[str, float]:
     groups = group_by_category(appliances)
 
     # 1. Get average power over appliances from the same group
@@ -25,13 +25,16 @@ def compute_min_consumption(appliances: list[Appliance]) -> float:
     power_a = avg_power(groups[UsageCategory.A])
     power_l = avg_power(groups[UsageCategory.L])
 
-    # 2. Get min usage time
-    min_f = UsageCategory.F.min()
-    min_a = UsageCategory.A.min()
-    min_l = UsageCategory.L.min()
+    # 2. Get min and max usage time
+    min_f, max_f = UsageCategory.F.min(), UsageCategory.F.max()
+    min_a, max_a = UsageCategory.A.min(), UsageCategory.A.max()
+    min_l, max_l = UsageCategory.L.min(), UsageCategory.L.max()
 
     min_consumption = min_f * power_f + min_a * power_a + min_l * power_l
-    return min_consumption
+    max_consumption = max_f * power_f + max_a * power_a + max_l * power_l
+    
+    result = {"min": min_consumption, "max": max_consumption}
+    return result
 
 
 def estimate(appliances: list[Appliance],
