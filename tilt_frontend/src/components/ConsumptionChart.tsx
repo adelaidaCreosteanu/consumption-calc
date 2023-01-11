@@ -106,7 +106,7 @@ export default function ConsumptionChart(props: IChartProps) {
           height={400}
           data={data.data}
           margin={{
-            top: 5,
+            top: 15,
             right: 30,
             left: 50,
             bottom: 5,
@@ -114,9 +114,8 @@ export default function ConsumptionChart(props: IChartProps) {
         >
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="name" />
-          <YAxis unit="Wh" domain={[0, data.max]} />
+          <YAxis unit=" Wh" domain={[0, data.max]} />
           <Tooltip />
-          <Legend verticalAlign="bottom" />
           <Bar dataKey="range" fill="#8884d8">
             {data.data.map((entry, index) => (
               <Cell
