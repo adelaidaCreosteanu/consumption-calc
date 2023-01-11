@@ -14,7 +14,7 @@ function App() {
         setConsumption={setConsumption}
         setEstimates={setEstimates}
       />
-      <ConsumptionChart estimates={estimates}/>
+      <ConsumptionChart estimates={estimates} consumption={consumption}/>
     </div>
   );
 }
