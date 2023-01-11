@@ -10,18 +10,25 @@ import {
   ComposedChart,
   PieChart,
   Pie,
+  Cell,
 } from "recharts";
 import { applianceCodes } from "./UserForm";
 
-interface IBarData {
+const colors = [
+  "#A6C80F",
+  "#5DF087",
+  "#6F87A5",
+  "#63467F",
+  "#562546",
+  "#FF715B",
+  "#F3DC31",
+  "#41AFDF",
+];
+
+interface IChartData {
   name: string;
   range: number[];
   mean: number;
-}
-
-interface IPieData {
-  name: string;
-  ratio: number;
 }
 
 interface IChartProps {
@@ -31,7 +38,8 @@ interface IChartProps {
 
 export default function ConsumptionChart(props: IChartProps) {
   const prepareData = () => {
-    let data: IBarData[] = [];
+    // Prepare data for plotting
+    let data: IChartData[] = [];
     let max = 0;
 
     for (let code in props.estimates) {
@@ -57,20 +65,25 @@ export default function ConsumptionChart(props: IChartProps) {
     return { data: data, max: max };
   };
 
-  const preparePercentages = (data: IBarData[]) => {
-    if (props.consumption) {
-      // Convert total consumption to Wh
-      let total = props.consumption * 1000;
-      let prcs: IPieData[] = [];
-      for (let d of data) {
-        let p = Number(((Number(d.mean) / total) * 100).toFixed(2));
-        prcs.push({
-          name: d.name,
-          ratio: p,
-        });
-      }
-      return prcs;
-    }
+  const renderCustomizedLabel = (args: any) => {
+    // Render pie chart labels on top of segments
+    const RADIAN = Math.PI / 180;
+    let { cx, cy, midAngle, innerRadius, outerRadius, percent, index } = args;
+    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+    return (
+      <text
+        x={x}
+        y={y}
+        fill="white"
+        textAnchor={x > cx ? "start" : "end"}
+        dominantBaseline="central"
+      >
+        {`${(percent * 100).toFixed(0)}%`}
+      </text>
+    );
   };
 
   const propsExist = () => {
@@ -79,8 +92,6 @@ export default function ConsumptionChart(props: IChartProps) {
 
   if (propsExist()) {
     let data = prepareData();
-    let percentages = preparePercentages(data.data);
-
     return (
       <Stack
         spacing={5}
@@ -106,20 +117,34 @@ export default function ConsumptionChart(props: IChartProps) {
           <YAxis unit="Wh" domain={[0, data.max]} />
           <Tooltip />
           <Legend verticalAlign="bottom" />
-          <Bar dataKey="range" fill="#8884d8" />
+          <Bar dataKey="range" fill="#8884d8">
+            {data.data.map((entry, index) => (
+              <Cell
+                key={`cell-${index}`}
+                fill={colors[index % colors.length]}
+              />
+            ))}
+          </Bar>
           <Scatter dataKey="mean" fill="blue" />
         </ComposedChart>
 
         <PieChart width={400} height={400}>
           <Pie
-            dataKey="ratio"
-            data={percentages}
+            dataKey="mean"
+            data={data.data}
             cx="50%"
             cy="50%"
             outerRadius={150}
-            fill="#8884d8"
-            label
-          />
+            labelLine={false}
+            label={renderCustomizedLabel}
+          >
+            {data.data.map((entry, index) => (
+              <Cell
+                key={`cell-${index}`}
+                fill={colors[index % colors.length]}
+              />
+            ))}
+          </Pie>
           <Tooltip />
         </PieChart>
       </Stack>
