@@ -9,16 +9,18 @@ Small app to compute and visualize the consumption of a household based on the a
 1. Start the server using `docker-compose`:
 
 ```bash
-cd tilt_backend
+cd backend
 docker-compose up
 ```
+
 The first time you run it, it might take a minute.
 
 2. Run the frontend in development mode using `npm`:
 
 In a different terminal window:
+
 ```bash
-cd tilt_frontend
+cd frontend
 npm start
 ```
 
